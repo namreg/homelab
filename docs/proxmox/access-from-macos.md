@@ -6,7 +6,7 @@ description: Access the Proxmox web interface from the MacBook with Mullvad conn
 
 # Proxmox access from macOS
 
-The [MacBook](equipment.md) connects to Keenetic over Wi-Fi. The Proxmox host
+The [MacBook](../equipment.md) connects to Keenetic over Wi-Fi. The Proxmox host
 connects to the upstream router by Ethernet. Without a host route, the MacBook
 sends traffic for Proxmox through the VPN instead of Keenetic.
 
