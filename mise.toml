@@ -1,0 +1,22 @@
+[tools]
+python = "3.13.18"
+rumdl = "0.3.5"
+uv = "0.13.9"
+
+[tools."http:okf-validate"]
+version = "527e81aff55992be21507e97004286789126f88c"
+url = "https://raw.githubusercontent.com/open-knowledge-format/open-knowledge-format/{{ version }}/skills/okf-generate/scripts/validate.py"
+checksum = "sha256:7f92df7d6a2118a5b7e5c388aa97de48f6ad31b942abc9e2fc7d344830661f49"
+bin = "okf-validate"
+
+[tasks."lint:markdown"]
+description = "Check Markdown files with rumdl"
+run = "rumdl check ."
+
+[tasks."lint:okf"]
+description = "Check the docs bundle against OKF 0.3"
+run = "uv run --no-project --with PyYAML==6.0.3 okf-validate docs --strict"
+
+[tasks.check]
+description = "Run all repository checks"
+depends = ["lint:markdown", "lint:okf"]
