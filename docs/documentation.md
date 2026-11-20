@@ -36,8 +36,12 @@ for navigation and `log.md` for optional change history.[^okf]
 3. Add the page and its description to the [bundle index](index.md). Add a
    subdirectory with its own index only when several pages cover the same
    subject. Use Git for change history.
-4. Run `mise install` to install the pinned tools. Stage your changes, then
-   run `mise run check` before you commit. This checks Markdown and the OKF
+4. Once per clone, run `mise install`, then `mise exec -- hk install --mise`.
+   This installs the [hk](https://hk.jdx.dev/) pre-commit hook.
+5. Stage your changes. At commit time, rumdl checks staged Markdown files,
+   the OKF validator checks the full bundle, and Betterleaks scans staged
+   changes. If a check fails, Git stops the commit.
+6. Run `mise run check` for a full check. This checks Markdown and the OKF
    bundle. It also runs Betterleaks on staged changes and local Git history.
    The secret scan does not check unstaged changes or untracked files.
    To run only the secret scan, use `mise run lint:secrets`.
