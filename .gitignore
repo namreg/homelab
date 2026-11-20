@@ -1,0 +1,42 @@
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+.vault_pass
+.vault_pass.txt
+.vault-password
+.vault-password.txt
+*.key
+*.pem
+*.agekey
+id_rsa
+id_ed25519
+
+# Ansible local artifacts
+.ansible/
+*.retry
+
+# Terraform / OpenTofu local state and plans
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+*.tfvars
+*.tfvars.json
+!*.example.tfvars
+!*.example.tfvars.json
+crash.log
+crash.*.log
+
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Workstation artifacts
+.DS_Store
+*.swp
