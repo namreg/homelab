@@ -6,23 +6,41 @@ description: How to create and configure Linux virtual machines on Proxmox VE.
 
 # Automation plan
 
-The [equipment inventory](equipment.md) lists the physical host. The steps
-below describe the plan, not an installed system.
+Resume at the first unchecked task. Mark a task complete after you verify it.
 
-1. Install Proxmox VE. Enable the `Import` content type on `local` for the
-   source image. Use `local-lvm` for VM disks.
-2. Use Terraform with the `bpg/proxmox` provider. Select an official Ubuntu
-   `amd64` cloud image. Record its build URL and SHA-256 checksum in the
-   configuration. Download the image once per host. For each VM, set the
-   name, CPU, memory, disk size, and network bridge. Use `disk.import_from`
-   to create a separate disk from the shared image. No VM template is needed.
-   See the [provider guide][image].
-3. Set the initial user, SSH public key, and network settings in the Terraform
-   `initialization` block. Proxmox supplies these settings to the guest on a
-   cloud-init drive. On first boot, cloud-init applies them inside the guest.
-4. After cloud-init finishes, use Ansible to install packages, configure
-   services, and maintain the guest. Keep ongoing service configuration in
-   Ansible so that a change does not require a new VM.
+## Prepare the host
+
+- [x] Install Proxmox VE on the [HP ProDesk](equipment.md).
+- [x] Open the [web interface from the MacBook](proxmox/access-from-macos.md).
+
+## Prepare Terraform access and storage
+
+- [ ] Create `terraform@pve` under **Datacenter > Permissions > Users**.
+  Select the `pve` realm.
+- [ ] Create an API token for this user. Grant the user and token only the
+  permissions needed to download images and manage the planned VMs.
+- [ ] Configure the `bpg/proxmox` Terraform provider and verify API access
+  with the token instead of the `root` password.
+- [ ] Enable the `Import` content type on `local` for source images.
+
+## Create the VMs
+
+- [ ] Select an official Ubuntu `amd64` cloud image. Pin its build URL and
+  SHA-256 checksum. Define one Terraform download resource per host.
+- [ ] Define each VM's name, CPU, memory, disk size, and network bridge.
+  Use `disk.import_from` to create each VM disk on `local-lvm` from the
+  shared image. No VM template is needed. See the [provider guide][image].
+- [ ] Set the initial user, public SSH key, and network settings in the
+  `initialization` block. Proxmox passes these settings to cloud-init.
+- [ ] Review the Terraform plan and apply it. After cloud-init finishes,
+  connect to each guest over SSH with the configured key.
+
+## Configure guest services
+
+- [ ] Use Ansible to install packages and configure services. Keep service
+  configuration in Ansible so changes do not require a new VM.
+- [ ] Verify the services and run the playbook again. Confirm that the second
+  run makes no changes.
 
 Keep HCL, cloud-init templates, and Ansible playbooks outside the documentation
 bundle. Keep private keys, API tokens, and state files out of Git.
