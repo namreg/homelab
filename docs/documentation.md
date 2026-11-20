@@ -36,10 +36,10 @@ for navigation and `log.md` for optional change history.[^okf]
 3. Add the page and its description to the [bundle index](index.md). Add a
    subdirectory with its own index only when several pages cover the same
    subject. Use Git for change history.
-4. Run `mise install` to install the pinned tools. Before you commit, run
-   `mise run check` to lint Markdown and validate the `docs/` bundle.
-   To run one check, use `mise run lint:markdown` or `mise run lint:okf`.
-   The OKF check fails on errors and warnings, including a missing `type`
-   in a concept file.
+4. Run `mise install` to install the pinned tools. Stage your changes, then
+   run `mise run check` before you commit. This checks Markdown and the OKF
+   bundle. It also runs Betterleaks on staged changes and local Git history.
+   The secret scan does not check unstaged changes or untracked files.
+   To run only the secret scan, use `mise run lint:secrets`.
 
 [^okf]: [Open Knowledge Format specification](https://github.com/open-knowledge-format/open-knowledge-format/blob/main/SPEC.md), sections 2 to 4, 6, 8, and 9.
