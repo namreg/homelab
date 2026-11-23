@@ -21,7 +21,6 @@ The HP has one DisplayPort and two HDMI ports on the rear panel.
 - **ISP router** (model unknown): provides Wi-Fi and an Ethernet connection
   to the switch. The router is not in bridge mode.
 - **TP-Link TL-SG105**: unmanaged switch with five Gigabit Ethernet ports.
-- **USB Gigabit Ethernet adapter**: connects the MacBook to the room outlets.
 
 ### Ethernet wall outlets
 
@@ -34,4 +33,4 @@ not internet speeds. The port for each jack at the cabinet is unknown.
 | Living room | 1 Gbit/s at one jack; no link at the other |
 | Children's room | No link at either jack |
 
-The same MacBook, adapter, and cable had a 1 Gbit/s link directly to the switch.
+The MacBook had a 1 Gbit/s link directly to the switch with the same cable.
