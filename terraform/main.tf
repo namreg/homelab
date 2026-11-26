@@ -1,10 +1,40 @@
+variable "state_passphrase" {
+  type      = string
+  sensitive = true
+
+  validation {
+    condition     = length(var.state_passphrase) >= 32 && !startswith(var.state_passphrase, "op://")
+    error_message = "Load the state passphrase from 1Password with op run."
+  }
+}
+
 terraform {
-  required_version = "~> 1.17.0"
+  required_version = "~> 1.13.0"
 
   required_providers {
     proxmox = {
-      source  = "bpg/proxmox"
+      source  = "registry.terraform.io/bpg/proxmox"
       version = "0.124.0"
+    }
+  }
+
+  encryption {
+    key_provider "pbkdf2" "homelab" {
+      passphrase = var.state_passphrase
+    }
+
+    method "aes_gcm" "homelab" {
+      keys = key_provider.pbkdf2.homelab
+    }
+
+    state {
+      method   = method.aes_gcm.homelab
+      enforced = true
+    }
+
+    plan {
+      method   = method.aes_gcm.homelab
+      enforced = true
     }
   }
 }

@@ -13,7 +13,7 @@ Resume at the first unchecked task. Mark a task complete after you verify it.
 - [x] Install Proxmox VE on the [HP ProDesk](equipment.md).
 - [x] Open the [web interface from the MacBook](proxmox/access-from-macos.md).
 
-## Prepare Terraform access and storage
+## Prepare OpenTofu access and storage
 
 - [x] Create `terraform@pve` in the `pve` realm.
 - [x] Create the `homelab` token for `terraform@pve` with privilege separation.
@@ -23,23 +23,23 @@ Resume at the first unchecked task. Mark a task complete after you verify it.
   Check for `Sys.Audit` and `Sys.AccessNetwork` on `/nodes/pve` and
   `Datastore.AllocateTemplate` on `/storage/local`. The script assigns
   `TerraformProvisioner` to the user and the token.
-  Use this role only for Terraform. Run the script again after a host rebuild
+  Use this role only for OpenTofu. Run the script again after a host rebuild
   once the user and token exist.
-- [x] Run the [Terraform access check](#check-terraform-access-from-macos)
+- [x] Run the [OpenTofu access check](#check-opentofu-access-from-macos)
   after the role change.
 - [ ] Grant VM permissions after selecting the VM and disk allocation paths.
 - [x] Verify that `local` accepts the `import` content type for source images.
 
 ## Create the VMs
 
-- [ ] Select an official Ubuntu `amd64` cloud image. Pin its build URL and
-  SHA-256 checksum. Define one Terraform download resource per host.
+- [x] Download the Ubuntu Server 24.04 LTS `amd64` cloud image to `local`.
+  OpenTofu pins build `20261017` and its SHA-256 checksum.
 - [ ] Define each VM's name, CPU, memory, disk size, and network bridge.
   Use `disk.import_from` to create each VM disk on `local-lvm` from the
   shared image. No VM template is needed. See the [provider guide][image].
 - [ ] Set the initial user, public SSH key, and network settings in the
   `initialization` block. Proxmox passes these settings to cloud-init.
-- [ ] Review the Terraform plan and apply it. After cloud-init finishes,
+- [ ] Review the OpenTofu plan and apply it. After cloud-init finishes,
   connect to each guest over SSH with the configured key.
 
 ## Configure guest services
@@ -50,12 +50,12 @@ Resume at the first unchecked task. Mark a task complete after you verify it.
   run makes no changes.
 
 Keep HCL, cloud-init templates, and Ansible playbooks outside the documentation
-bundle. Keep private keys, API tokens, and state files out of Git.
+bundle. Keep private keys, API tokens, and unencrypted state out of Git.
 
-## Check Terraform access from macOS
+## Check OpenTofu access from macOS
 
 After cloning the repository, run `mise bootstrap` at its root to install
-the tools and initialize Terraform. Run it again if you remove
+the tools and initialize OpenTofu. Run it again if you remove
 `terraform/.terraform/`. For access to the host, use the home network route
 from the [access instructions](proxmox/access-from-macos.md).
 
@@ -73,7 +73,7 @@ In the 1Password desktop app, open **Settings > Developer**. Enable CLI
 integration. In the `homelab` Environment, set `PROXMOX_VE_API_TOKEN`
 to the full token: `terraform@pve!homelab=` followed by the token secret.
 The task selects this Environment by ID. Keep only the secrets that
-Terraform needs in this Environment.
+OpenTofu needs in this Environment.
 
 Run the plan with the 1Password CLI installed by `mise bootstrap`:
 
@@ -81,9 +81,13 @@ Run the plan with the 1Password CLI installed by `mise bootstrap`:
 mise run tf:plan
 ```
 
-Check that the plan shows `host_cpu_model` and no resource changes. Do not
-run `apply` for this check. On a new workstation, use the same configuration
-and provider lock file. No state backup is needed for this read-only check.
-Before managing VMs, set up a backup for Terraform state outside Git.
+After the image download, the plan should report no changes. Commit and push
+the encrypted `terraform/terraform.tfstate` after each operation that changes
+it. Pull the latest state before using another workstation. Run OpenTofu on
+only one workstation at a time. Git does not lock state across workstations.
+OpenTofu encrypts state and saved plans. The tasks load the passphrase from
+the `Homelab OpenTofu state` item in the `Personal` 1Password vault. Recover
+the same item before restoring state. Do not replace its password without
+migrating the encrypted state.
 
 [image]: https://bpg.sh/docs/guides/cloud-image/

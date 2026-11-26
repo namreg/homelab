@@ -2,9 +2,9 @@
 1password-cli = "2.42.0"
 betterleaks = "1.10.1"
 hk = "2.13.0"
+opentofu = "1.13.10"
 python = "3.13.18"
 rumdl = "0.3.5"
-terraform = "1.17.2"
 uv = "0.13.9"
 
 [tools."http:okf-validate"]
@@ -12,6 +12,9 @@ version = "527e81aff55992be21507e97004286789126f88c"
 url = "https://raw.githubusercontent.com/open-knowledge-format/open-knowledge-format/{{ version }}/skills/okf-generate/scripts/validate.py"
 checksum = "sha256:7f92df7d6a2118a5b7e5c388aa97de48f6ad31b942abc9e2fc7d344830661f49"
 bin = "okf-validate"
+
+[env]
+TF_VAR_state_passphrase = "op://Personal/Homelab OpenTofu state/password"
 
 [tasks."lint:markdown"]
 description = "Check Markdown files with rumdl"
@@ -31,18 +34,18 @@ depends = ["lint:secrets:staged"]
 run = "betterleaks git --log-opts=--all --redact --verbose ."
 
 [tasks.bootstrap]
-description = "Initialize the Terraform working directory"
+description = "Initialize the OpenTofu working directory"
 dir = "terraform"
-run = "terraform init -input=false -lockfile=readonly"
+run = "op run -- tofu init -input=false -lockfile=readonly"
 
 [tasks."pve:permissions"]
-description = "Grant Terraform image download access on the Proxmox host"
+description = "Grant OpenTofu image download access on the Proxmox host"
 run = "ssh root@192.168.1.250 'sh -s' < scripts/proxmox-permissions.sh"
 
 [tasks."tf:plan"]
-description = "Read the Proxmox node without changing it"
+description = "Preview changes to Proxmox resources"
 dir = "terraform"
-run = "op run --environment 2ljck7he2sitr2th6twqk3xpgu -- terraform plan -input=false"
+run = "op run --environment 2ljck7he2sitr2th6twqk3xpgu -- tofu plan -input=false"
 
 [tasks.check]
 description = "Run all repository checks"
