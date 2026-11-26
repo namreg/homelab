@@ -43,23 +43,18 @@ Resume at the first unchecked task. Mark a task complete after you verify it.
   connect to each guest over SSH with the configured key.
 
 The guest uses `192.168.1.251/24` with gateway `192.168.1.1`. Keep this
-address outside the DHCP pool. Connect through Proxmox from the repository
-root on the Mac with the 1Password SSH agent:
+address outside the DHCP pool. Connect directly from the repository root on
+the Mac with the 1Password SSH agent:
 
 ```sh
 export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-hop='ssh -F /dev/null -o IdentitiesOnly=yes -i ~/.ssh/homelab_pve.pub'
-target='192.168.1.251:22'
 ssh -F /dev/null -o IdentitiesOnly=yes -i terraform/lab-01.pub \
-  -o HostKeyAlias=lab-01-via-pve \
-  -o "ProxyCommand=$hop -W $target root@192.168.1.250" \
-  ubuntu@lab-01
+  -o HostKeyAlias=lab-01-via-pve ubuntu@192.168.1.251
 ```
 
-On each Mac, enable the `Homelab` vault in the 1Password SSH agent config
-(`~/.config/1Password/ssh/agent.toml`). The host key for administrator
-access is `homelab-pve`. The guest login key is `homelab-lab-01`. If you
-replace the VM, check its SSH host key before connecting.
+`HostKeyAlias` reuses the verified guest host key. It does not route traffic
+through Proxmox. Use the `homelab-lab-01` key to log in to Ubuntu.
+If you replace the VM, verify its new SSH host key before connecting.
 
 ## Configure guest services
 
@@ -73,10 +68,14 @@ bundle. Keep private keys, API tokens, and unencrypted state out of Git.
 
 ## Check OpenTofu access from macOS
 
-After cloning the repository, run `mise bootstrap` at its root to install
-the tools and initialize OpenTofu. Run it again if you remove
-`terraform/.terraform/`. For access to the host, use the home network route
-from the [access instructions](proxmox/access-from-macos.md).
+On a new Mac, sign in to the 1Password desktop app. Under **Settings >
+Developer**, enable CLI integration and the SSH agent. Check that you can
+open `Homelab OpenTofu state` in the `Homelab` vault. Enable this vault
+in `~/.config/1Password/ssh/agent.toml` for SSH access.
+
+At the repository root, run `mise bootstrap` to install the tools and
+initialize OpenTofu. Run it again if you remove `terraform/.terraform/`.
+For access to Proxmox, follow the [network instructions](proxmox/access-from-macos.md).
 
 On each new Mac, copy `/etc/pve/pve-root-ca.pem` from the host over SSH.
 Check the SSH host key against the fingerprint on the host console first.
@@ -88,11 +87,9 @@ security add-trusted-cert -r trustRoot -p ssl -s 192.168.1.250 \
   -k "$HOME/Library/Keychains/login.keychain-db" "$HOME/pve-root-ca.pem"
 ```
 
-In the 1Password desktop app, open **Settings > Developer**. Enable CLI
-integration. In the `homelab` Environment, set `PROXMOX_VE_API_TOKEN`
-to the full token: `terraform@pve!homelab=` followed by the token secret.
-The task selects this Environment by ID. Keep only the secrets that
-OpenTofu needs in this Environment.
+The plan reads `PROXMOX_VE_API_TOKEN` from the existing `homelab`
+1Password Environment. Use the same Environment on the new Mac.
+Do not create a new token or state passphrase.
 
 Run the plan with the 1Password CLI installed by `mise bootstrap`:
 
