@@ -16,12 +16,19 @@ Resume at the first unchecked task. Mark a task complete after you verify it.
 ## Prepare Terraform access and storage
 
 - [x] Create `terraform@pve` in the `pve` realm.
-- [x] Create the `homelab` token. Give the user and token the `PVEAuditor`
-  role on `/nodes/pve`. Verify node access with an authenticated HTTPS request.
-- [ ] Run the [Terraform access check](#check-terraform-access-from-macos).
-- [ ] Grant the user and token the additional rights needed to download images
-  and manage the planned VMs.
-- [ ] Enable the `Import` content type on `local` for source images.
+- [x] Create the `homelab` token for `terraform@pve` with privilege separation.
+- [x] Grant node read access and image download access with one role.
+  From the repository root on the Mac, run
+  `mise run pve:permissions`. This task connects to the host as `root` over SSH.
+  Check for `Sys.Audit` and `Sys.AccessNetwork` on `/nodes/pve` and
+  `Datastore.AllocateTemplate` on `/storage/local`. The script assigns
+  `TerraformProvisioner` to the user and the token.
+  Use this role only for Terraform. Run the script again after a host rebuild
+  once the user and token exist.
+- [x] Run the [Terraform access check](#check-terraform-access-from-macos)
+  after the role change.
+- [ ] Grant VM permissions after selecting the VM and disk allocation paths.
+- [x] Verify that `local` accepts the `import` content type for source images.
 
 ## Create the VMs
 

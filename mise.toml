@@ -35,6 +35,10 @@ description = "Initialize the Terraform working directory"
 dir = "terraform"
 run = "terraform init -input=false -lockfile=readonly"
 
+[tasks."pve:permissions"]
+description = "Grant Terraform image download access on the Proxmox host"
+run = "ssh root@192.168.1.250 'sh -s' < scripts/proxmox-permissions.sh"
+
 [tasks."tf:plan"]
 description = "Read the Proxmox node without changing it"
 dir = "terraform"
