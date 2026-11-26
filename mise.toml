@@ -14,7 +14,7 @@ checksum = "sha256:7f92df7d6a2118a5b7e5c388aa97de48f6ad31b942abc9e2fc7d344830661
 bin = "okf-validate"
 
 [env]
-TF_VAR_state_passphrase = "op://Personal/Homelab OpenTofu state/password"
+TF_VAR_state_passphrase = "op://Homelab/Homelab OpenTofu state/password"
 
 [tasks."lint:markdown"]
 description = "Check Markdown files with rumdl"
@@ -39,8 +39,8 @@ dir = "terraform"
 run = "op run -- tofu init -input=false -lockfile=readonly"
 
 [tasks."pve:permissions"]
-description = "Grant OpenTofu image download access on the Proxmox host"
-run = "ssh root@192.168.1.250 'sh -s' < scripts/proxmox-permissions.sh"
+description = "Grant OpenTofu access to the guest and its storage and network"
+run = """SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" ssh -o IdentitiesOnly=yes -i "$HOME/.ssh/homelab_pve.pub" root@192.168.1.250 'sh -s' < scripts/proxmox-permissions.sh"""
 
 [tasks."tf:plan"]
 description = "Preview changes to Proxmox resources"

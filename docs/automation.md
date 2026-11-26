@@ -27,20 +27,39 @@ Resume at the first unchecked task. Mark a task complete after you verify it.
   once the user and token exist.
 - [x] Run the [OpenTofu access check](#check-opentofu-access-from-macos)
   after the role change.
-- [ ] Grant VM permissions after selecting the VM and disk allocation paths.
+- [x] Grant access to VM 100, `local-lvm`, and the `vmbr0` bridge.
 - [x] Verify that `local` accepts the `import` content type for source images.
 
 ## Create the VMs
 
 - [x] Download the Ubuntu Server 24.04 LTS `amd64` cloud image to `local`.
   OpenTofu pins build `20261017` and its SHA-256 checksum.
-- [ ] Define each VM's name, CPU, memory, disk size, and network bridge.
+- [x] Define `lab-01` with two CPU cores, 2048 MiB of RAM, and a 20 GiB disk.
   Use `disk.import_from` to create each VM disk on `local-lvm` from the
   shared image. No VM template is needed. See the [provider guide][image].
-- [ ] Set the initial user, public SSH key, and network settings in the
+- [x] Set the initial user, public SSH key, and network settings in the
   `initialization` block. Proxmox passes these settings to cloud-init.
-- [ ] Review the OpenTofu plan and apply it. After cloud-init finishes,
+- [x] Review the OpenTofu plan and apply it. After cloud-init finishes,
   connect to each guest over SSH with the configured key.
+
+The guest uses `192.168.1.251/24` with gateway `192.168.1.1`. Keep this
+address outside the DHCP pool. Connect through Proxmox from the repository
+root on the Mac with the 1Password SSH agent:
+
+```sh
+export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+hop='ssh -F /dev/null -o IdentitiesOnly=yes -i ~/.ssh/homelab_pve.pub'
+target='192.168.1.251:22'
+ssh -F /dev/null -o IdentitiesOnly=yes -i terraform/lab-01.pub \
+  -o HostKeyAlias=lab-01-via-pve \
+  -o "ProxyCommand=$hop -W $target root@192.168.1.250" \
+  ubuntu@lab-01
+```
+
+On each Mac, enable the `Homelab` vault in the 1Password SSH agent config
+(`~/.config/1Password/ssh/agent.toml`). The host key for administrator
+access is `homelab-pve`. The guest login key is `homelab-lab-01`. If you
+replace the VM, check its SSH host key before connecting.
 
 ## Configure guest services
 
@@ -86,7 +105,7 @@ the encrypted `terraform/terraform.tfstate` after each operation that changes
 it. Pull the latest state before using another workstation. Run OpenTofu on
 only one workstation at a time. Git does not lock state across workstations.
 OpenTofu encrypts state and saved plans. The tasks load the passphrase from
-the `Homelab OpenTofu state` item in the `Personal` 1Password vault. Recover
+the `Homelab OpenTofu state` item in the `Homelab` 1Password vault. Recover
 the same item before restoring state. Do not replace its password without
 migrating the encrypted state.
 
