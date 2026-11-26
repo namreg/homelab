@@ -1,4 +1,5 @@
 # Local environment and credentials
+.proxmox-token-ref
 .env
 .env.*
 !.env.example

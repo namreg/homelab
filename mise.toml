@@ -1,8 +1,10 @@
 [tools]
+1password-cli = "2.42.0"
 betterleaks = "1.10.1"
 hk = "2.13.0"
 python = "3.13.18"
 rumdl = "0.3.5"
+terraform = "1.17.2"
 uv = "0.13.9"
 
 [tools."http:okf-validate"]
@@ -27,6 +29,16 @@ run = "betterleaks git --pre-commit --staged --redact --verbose ."
 description = "Scan staged changes and Git history for secrets"
 depends = ["lint:secrets:staged"]
 run = "betterleaks git --log-opts=--all --redact --verbose ."
+
+[tasks.bootstrap]
+description = "Initialize the Terraform working directory"
+dir = "terraform"
+run = "terraform init -input=false -lockfile=readonly"
+
+[tasks."tf:plan"]
+description = "Read the Proxmox node without changing it"
+dir = "terraform"
+run = "op run --environment 2ljck7he2sitr2th6twqk3xpgu -- terraform plan -input=false"
 
 [tasks.check]
 description = "Run all repository checks"
