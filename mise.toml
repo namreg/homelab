@@ -18,9 +18,9 @@ TF_VAR_state_passphrase = "op://Homelab/Homelab OpenTofu state/password"
 
 [task_config]
 includes = [
-  "mise-tasks/lint.toml",
-  "mise-tasks/terraform.toml",
-  "mise-tasks/proxmox.toml",
+  "mise/tasks/lint.toml",
+  "mise/tasks/terraform.toml",
+  "mise/tasks/proxmox.toml",
 ]
 
 [tasks.check]
