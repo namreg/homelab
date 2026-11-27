@@ -27,8 +27,8 @@ resource "proxmox_virtual_environment_vm" "lab_01" {
 
     ip_config {
       ipv4 {
-        address = "192.168.1.251/24"
-        gateway = "192.168.1.1"
+        address = var.guest_ipv4_address
+        gateway = var.ipv4_gateway
       }
     }
 

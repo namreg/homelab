@@ -42,6 +42,24 @@ Resume at the first unchecked task. Mark a task complete after you verify it.
 - [x] Review the OpenTofu plan and apply it. After cloud-init finishes,
   connect to each guest over SSH with the configured key.
 
+Set the Proxmox endpoint, guest IPv4 address with prefix length, and gateway
+in `terraform/terraform.tfvars`. This file contains non-secret site settings.
+Input types and validation rules are in `terraform/variables.tf`.
+Keep credentials and the state passphrase in 1Password.
+
+The `ubuntu_image` local in `terraform/main.tf` pins the release, build, and
+SHA-256 checksum. Update these values together when you select a new image.
+Review `mise run tf:plan` before applying changes, especially disk changes.
+Run `mise run check` to check OpenTofu formatting and configuration, along
+with the other repository checks. To check only OpenTofu, run
+`mise run lint:terraform`. Initialize the working directory with
+`mise bootstrap` before the first check.
+
+Task definitions are grouped in `mise-tasks/lint.toml`,
+`mise-tasks/terraform.toml`, and `mise-tasks/proxmox.toml`. The root
+`mise.toml` sets tool versions, shared environment variables, task file paths,
+and the `check` task.
+
 The guest uses `192.168.1.251/24` with gateway `192.168.1.1`. Keep this
 address outside the DHCP pool. Connect directly from the repository root on
 the Mac with the 1Password SSH agent:

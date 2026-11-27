@@ -29,6 +29,7 @@ tfplan
 *.tfvars.json
 !*.example.tfvars
 !*.example.tfvars.json
+!/terraform/terraform.tfvars
 crash.log
 crash.*.log
 
