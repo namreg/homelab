@@ -16,42 +16,18 @@ bin = "okf-validate"
 [env]
 TF_VAR_state_passphrase = "op://Homelab/Homelab OpenTofu state/password"
 
-[tasks."lint:markdown"]
-description = "Check Markdown files with rumdl"
-run = "rumdl check ."
-
-[tasks."lint:okf"]
-description = "Check the docs bundle against OKF 0.3"
-run = "uv run --no-project --with PyYAML==6.0.3 okf-validate docs --strict"
-
-[tasks."lint:secrets:staged"]
-description = "Scan staged changes for secrets"
-run = "betterleaks git --pre-commit --staged --redact --verbose ."
-
-[tasks."lint:secrets"]
-description = "Scan staged changes and Git history for secrets"
-depends = ["lint:secrets:staged"]
-run = "betterleaks git --log-opts=--all --redact --verbose ."
-
-[tasks.bootstrap]
-description = "Initialize the OpenTofu working directory"
-dir = "terraform"
-run = "op run -- tofu init -input=false -lockfile=readonly"
-
-[tasks."pve:permissions"]
-description = "Grant OpenTofu access to the guest and its storage and network"
-run = """SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" ssh -o IdentitiesOnly=yes -i "$HOME/.ssh/homelab_pve.pub" root@192.168.1.250 'sh -s' < scripts/proxmox-permissions.sh"""
-
-[tasks."tf:plan"]
-description = "Preview changes to Proxmox resources"
-dir = "terraform"
-run = "op run --environment 2ljck7he2sitr2th6twqk3xpgu -- tofu plan -input=false"
-
-[tasks."tf:apply"]
-description = "Apply changes to Proxmox resources"
-dir = "terraform"
-run = "op run --environment 2ljck7he2sitr2th6twqk3xpgu -- tofu apply"
+[task_config]
+includes = [
+  "mise-tasks/lint.toml",
+  "mise-tasks/terraform.toml",
+  "mise-tasks/proxmox.toml",
+]
 
 [tasks.check]
 description = "Run all repository checks"
-depends = ["lint:markdown", "lint:okf", "lint:secrets"]
+depends = [
+  "lint:markdown",
+  "lint:okf",
+  "lint:secrets",
+  "lint:terraform",
+]

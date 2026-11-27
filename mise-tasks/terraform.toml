@@ -1,0 +1,14 @@
+[bootstrap]
+description = "Initialize the OpenTofu working directory"
+dir = "terraform"
+run = "op run -- tofu init -input=false -lockfile=readonly"
+
+["tf:plan"]
+description = "Preview changes to Proxmox resources"
+dir = "terraform"
+run = "op run --environment 2ljck7he2sitr2th6twqk3xpgu -- tofu plan -input=false"
+
+["tf:apply"]
+description = "Apply changes to Proxmox resources"
+dir = "terraform"
+run = "op run --environment 2ljck7he2sitr2th6twqk3xpgu -- tofu apply"

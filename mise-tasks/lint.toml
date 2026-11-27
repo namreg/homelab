@@ -1,0 +1,24 @@
+["lint:markdown"]
+description = "Check Markdown files with rumdl"
+run = "rumdl check ."
+
+["lint:okf"]
+description = "Check the docs bundle against OKF 0.3"
+run = "uv run --no-project --with PyYAML==6.0.3 okf-validate docs --strict"
+
+["lint:secrets:staged"]
+description = "Scan staged changes for secrets"
+run = "betterleaks git --pre-commit --staged --redact --verbose ."
+
+["lint:secrets"]
+description = "Scan staged changes and Git history for secrets"
+depends = ["lint:secrets:staged"]
+run = "betterleaks git --log-opts=--all --redact --verbose ."
+
+["lint:terraform"]
+description = "Check OpenTofu formatting and configuration"
+dir = "terraform"
+run = [
+  "tofu fmt -check",
+  "tofu validate",
+]
