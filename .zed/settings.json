@@ -1,0 +1,6 @@
+{
+  "file_types": {
+    "OpenTofu": ["tf"],
+    "OpenTofu Vars": ["tfvars"]
+  }
+}
