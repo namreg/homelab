@@ -97,6 +97,14 @@ Run the plan with the 1Password CLI installed by `mise bootstrap`:
 mise run tf:plan
 ```
 
+To apply changes, run:
+
+```sh
+mise run tf:apply
+```
+
+Review the plan. Enter `yes` to apply it.
+
 After the image download, the plan should report no changes. Commit and push
 the encrypted `terraform/terraform.tfstate` after each operation that changes
 it. Pull the latest state before using another workstation. Run OpenTofu on

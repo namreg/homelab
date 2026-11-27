@@ -47,6 +47,11 @@ description = "Preview changes to Proxmox resources"
 dir = "terraform"
 run = "op run --environment 2ljck7he2sitr2th6twqk3xpgu -- tofu plan -input=false"
 
+[tasks."tf:apply"]
+description = "Apply changes to Proxmox resources"
+dir = "terraform"
+run = "op run --environment 2ljck7he2sitr2th6twqk3xpgu -- tofu apply"
+
 [tasks.check]
 description = "Run all repository checks"
 depends = ["lint:markdown", "lint:okf", "lint:secrets"]
